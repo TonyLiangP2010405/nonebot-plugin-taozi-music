@@ -1,7 +1,7 @@
 import nonebot
 import pytest
-from nonebug import NONEBOT_INIT_KWARGS
 from nonebot.adapters.onebot.v11 import Adapter as OneBotV11Adapter
+from nonebug import NONEBOT_INIT_KWARGS
 
 
 def pytest_configure(config: pytest.Config) -> None:
