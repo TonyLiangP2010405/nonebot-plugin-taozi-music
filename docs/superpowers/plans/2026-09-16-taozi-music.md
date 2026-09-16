@@ -4,9 +4,9 @@
 
 **Goal:** 开发 NoneBot2 插件 nonebot-plugin-taozi-music：每天定时在 QQ 群以语音条播放小小桃子呦唱过的歌（随机不重复），支持 SUPERUSER 命令点歌/歌单/设置时间。
 
-**Architecture:** 歌单数据（resources/songs.yaml，含 BV 号与起止时间戳）→ library.py 负责歌单校验/播放历史/随机不重复选歌 → audio.py 用 yt-dlp 只下音频、ffmpeg 按时间戳裁剪并缓存 → commands.py 提供 /桃乐 系列命令（仅 SUPERUSER）→ scheduler.py 用 nonebot-plugin-apscheduler 每日定时推送到配置群。
+**Architecture:** 歌单数据（resources/songs.yaml，含 BV 号与起止时间戳）→ library.py 负责歌单校验/播放历史/随机不重复选歌 → audio.py 经 B站官方 API 只下音频流（httpx）、ffmpeg 按时间戳裁剪并缓存 → commands.py 提供 /桃乐 系列命令（仅 SUPERUSER）→ scheduler.py 用 nonebot-plugin-apscheduler 每日定时推送到配置群。
 
-**Tech Stack:** NoneBot2 >= 2.2.0、OneBot V11、Poetry、pytest + nonebug、yt-dlp + ffmpeg（外部命令）。
+**Tech Stack:** NoneBot2 >= 2.2.0、OneBot V11、Poetry、pytest + nonebug、httpx（B站 API 下载音频）+ ffmpeg（外部命令，转码/裁剪）。
 
 **Spec:** `docs/superpowers/specs/2026-09-16-taozi-music-design.md`（相对 spec 的依赖调整：新增 nonebot-plugin-localstore 作为插件数据目录方案，移除未使用的 httpx；spec 已同步更新）。
 
@@ -16,7 +16,7 @@
 - NoneBot2 官方 API（禁 v1 写法）；所有事件处理保持异步，网络/子进程禁止同步阻塞（子进程用 `asyncio.create_subprocess_exec`）。
 - 所有命令 `permission=SUPERUSER`，非管理员触发不响应。
 - 播放一律用 `MessageSegment.record()` 发语音条，禁止发文件消息。
-- 依赖固定为：`nonebot2 = ">=2.2.0"`、`nonebot-adapter-onebot = ">=2.4.0"`、`nonebot-plugin-apscheduler = ">=0.5.0"`、`nonebot-plugin-localstore = ">=0.7.0"`、`PyYAML = ">=6.0"`；不新增其他运行依赖。
+- 依赖固定为：`nonebot2 = ">=2.2.0"`、`nonebot-adapter-onebot = ">=2.4.0"`、`nonebot-plugin-apscheduler = ">=0.5.0"`、`nonebot-plugin-localstore = ">=0.7.0"`、`PyYAML = ">=6.0"`、`httpx = ">=0.27"`（Task 5 起需要）；不新增其他运行依赖。外部命令：ffmpeg（不得使用 yt-dlp——B站风控 412 拦截，已实测确认）。
 - 配置项全部有默认值，缺配置 import 不失败；不写死任何 token/cookie。
 - 每个 Task 结束时按给出的命令提交一次 git commit。
 
@@ -672,9 +672,12 @@ git commit -m "feat: initial real song library collected from bilibili"
 
 ---
 
-### Task 5: audio.py — 下载与裁剪
+### Task 5: audio.py — B站 API 音频下载与裁剪
+
+> 本任务为修订版（2026-09-16）：实测确认 B站风控 412 全面拦截 yt-dlp（`yt-dlp --skip-download` 报错 HTTP Error 412），因此下载改为 httpx 直连 B站官方 API（view 取 cid → playurl fnval=16 取 DASH 音频流 → 带 UA/Referer 下载 m4a），ffmpeg 负责转码/裁剪为 mp3。已实测该链路无需登录可下载音频。
 
 **Files:**
+- Modify: `pyproject.toml`（`poetry add httpx`，加入 `[tool.poetry.dependencies]`）
 - Create: `nonebot_plugin_taozi_music/audio.py`
 - Test: `tests/test_audio.py`
 
@@ -682,13 +685,21 @@ git commit -m "feat: initial real song library collected from bilibili"
 - Consumes: Task 2 的 `Song`（`id`、`bv`、`is_clip`、`start`、`end`）
 - Produces:
   - `class AudioError(Exception)`
-  - `async ensure_audio(song: Song, cache_dir: Path) -> Path`：缓存命中直接返回 `{cache_dir}/{song.id}.mp3`；未命中则 yt-dlp 只下音频，非切片歌再用 ffmpeg 按 start/end 裁剪；失败抛 `AudioError`
+  - `async ensure_audio(song: Song, cache_dir: Path) -> Path`：缓存命中直接返回 `{cache_dir}/{song.id}.mp3`；未命中则经 B站 API 下载音频流，再用 ffmpeg 转码为 mp3（非切片歌同时按 start/end 裁剪）；失败抛 `AudioError`
+  - `async _fetch_audio_url(client: httpx.AsyncClient, bv: str) -> str`：取最高码率音频流地址，失败抛 `AudioError`
+  - `async _run(cmd: list) -> None`：执行外部命令，非零退出抛 `AudioError`
+
+- [ ] **Step 0: 添加 httpx 依赖**
+
+Run: `poetry add "httpx>=0.27"`
+Expected: pyproject.toml 的 `[tool.poetry.dependencies]` 出现 `httpx = ">=0.27"`，poetry.lock 更新
 
 - [ ] **Step 1: 写失败测试 `tests/test_audio.py`**
 
 ```python
 from pathlib import Path
 
+import httpx
 import pytest
 
 import nonebot_plugin_taozi_music.audio as audio
@@ -706,61 +717,117 @@ async def test_ensure_audio_cache_hit(tmp_path, monkeypatch):
     target = tmp_path / "1.mp3"
     target.write_bytes(b"cached")
 
-    async def boom(cmd):
-        raise AssertionError("不应执行任何外部命令")
+    async def boom(*args, **kwargs):
+        raise AssertionError("缓存命中时不应下载或执行外部命令")
 
+    monkeypatch.setattr(audio, "_download_audio", boom)
     monkeypatch.setattr(audio, "_run", boom)
     assert await ensure_audio(_song(), tmp_path) == target
 
 
-async def test_ensure_audio_missing_yt_dlp(tmp_path, monkeypatch):
+async def test_ensure_audio_missing_ffmpeg(tmp_path, monkeypatch):
     monkeypatch.setattr(audio.shutil, "which", lambda name: None)
-    with pytest.raises(AudioError, match="yt-dlp"):
+    with pytest.raises(AudioError, match="ffmpeg"):
         await ensure_audio(_song(), tmp_path)
 
 
 async def test_ensure_audio_clip_song(tmp_path, monkeypatch):
-    async def fake_run(cmd):
-        if cmd[0] == "yt-dlp":
-            template = Path(cmd[cmd.index("-o") + 1])
-            template.with_suffix(".mp3").write_bytes(b"audio")
+    async def fake_download(song, raw_path):
+        raw_path.write_bytes(b"audio")
 
+    async def fake_run(cmd):
+        Path(cmd[-1]).write_bytes(b"mp3")
+
+    monkeypatch.setattr(audio, "_download_audio", fake_download)
     monkeypatch.setattr(audio, "_run", fake_run)
     monkeypatch.setattr(audio.shutil, "which", lambda name: "/usr/bin/" + name)
     result = await ensure_audio(_song(), tmp_path)
     assert result == tmp_path / "1.mp3"
-    assert result.read_bytes() == b"audio"
+    assert result.read_bytes() == b"mp3"
 
 
 async def test_ensure_audio_cut_song(tmp_path, monkeypatch):
     calls = []
 
+    async def fake_download(song, raw_path):
+        raw_path.write_bytes(b"audio")
+
     async def fake_run(cmd):
         calls.append(cmd)
-        if cmd[0] == "yt-dlp":
-            template = Path(cmd[cmd.index("-o") + 1])
-            template.with_suffix(".mp3").write_bytes(b"audio")
-        elif cmd[0] == "ffmpeg":
-            Path(cmd[-1]).write_bytes(b"clip")
+        Path(cmd[-1]).write_bytes(b"clip")
 
+    monkeypatch.setattr(audio, "_download_audio", fake_download)
     monkeypatch.setattr(audio, "_run", fake_run)
     monkeypatch.setattr(audio.shutil, "which", lambda name: "/usr/bin/" + name)
     song = _song(start="12:30", end="14:05")
     result = await ensure_audio(song, tmp_path)
     assert result == tmp_path / "1.mp3"
-    ffmpeg_cmd = next(c for c in calls if c[0] == "ffmpeg")
+    ffmpeg_cmd = calls[0]
     assert ffmpeg_cmd[ffmpeg_cmd.index("-ss") + 1] == "12:30"
     assert ffmpeg_cmd[ffmpeg_cmd.index("-to") + 1] == "14:05"
 
 
-async def test_ensure_audio_command_failure(tmp_path, monkeypatch):
-    async def fail_run(cmd):
-        raise AudioError("命令执行失败 (yt-dlp): boom")
+async def test_ensure_audio_download_failure(tmp_path, monkeypatch):
+    async def fail_download(song, raw_path):
+        raise AudioError("获取视频信息失败")
 
-    monkeypatch.setattr(audio, "_run", fail_run)
+    monkeypatch.setattr(audio, "_download_audio", fail_download)
     monkeypatch.setattr(audio.shutil, "which", lambda name: "/usr/bin/" + name)
     with pytest.raises(AudioError):
         await ensure_audio(_song(), tmp_path)
+    assert not (tmp_path / "1.mp3").exists()
+
+
+async def test_fetch_audio_url_picks_highest_bandwidth():
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if "web-interface/view" in url:
+            return httpx.Response(200, json={"code": 0, "data": {"cid": 123}})
+        if "player/playurl" in url:
+            return httpx.Response(
+                200,
+                json={
+                    "code": 0,
+                    "data": {
+                        "dash": {
+                            "audio": [
+                                {"baseUrl": "https://cdn/64k", "bandwidth": 64000},
+                                {"baseUrl": "https://cdn/132k", "bandwidth": 132000},
+                            ]
+                        }
+                    },
+                },
+            )
+        return httpx.Response(200)  # 首页 cookie bootstrap
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        url = await audio._fetch_audio_url(client, "BV1xx411c7mD")
+    assert url == "https://cdn/132k"
+
+
+async def test_fetch_audio_url_view_api_error():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "web-interface/view" in str(request.url):
+            return httpx.Response(200, json={"code": -404, "message": "啥都木有"})
+        return httpx.Response(200)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AudioError, match="获取视频信息失败"):
+            await audio._fetch_audio_url(client, "BV1xx411c7mD")
+
+
+async def test_fetch_audio_url_no_audio_stream():
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if "web-interface/view" in url:
+            return httpx.Response(200, json={"code": 0, "data": {"cid": 123}})
+        if "player/playurl" in url:
+            return httpx.Response(200, json={"code": 0, "data": {"dash": {}}})
+        return httpx.Response(200)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AudioError, match="未取到音频流"):
+            await audio._fetch_audio_url(client, "BV1xx411c7mD")
 ```
 
 - [ ] **Step 2: 跑测试确认失败**
@@ -776,7 +843,17 @@ import shutil
 import tempfile
 from pathlib import Path
 
+import httpx
+
 from .library import Song
+
+UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+)
+HOMEPAGE = "https://www.bilibili.com/"
+VIEW_API = "https://api.bilibili.com/x/web-interface/view"
+PLAYURL_API = "https://api.bilibili.com/x/player/playurl"
 
 
 class AudioError(Exception):
@@ -795,43 +872,66 @@ async def _run(cmd: list) -> None:
         raise AudioError(f"命令执行失败 ({cmd[0]}): {tail}")
 
 
+async def _fetch_audio_url(client: httpx.AsyncClient, bv: str) -> str:
+    """经 B站官方 API 取最高码率音频流地址，失败抛 AudioError"""
+    # 先访问首页拿 buvid3 等 cookie，避免 API 被 412 风控拦截
+    await client.get(HOMEPAGE)
+
+    resp = await client.get(VIEW_API, params={"bvid": bv})
+    data = resp.json()
+    if data.get("code") != 0:
+        raise AudioError(f"获取视频信息失败 ({bv}): code={data.get('code')}")
+    cid = data["data"]["cid"]
+
+    resp = await client.get(
+        PLAYURL_API, params={"bvid": bv, "cid": cid, "fnval": 16}
+    )
+    pdata = resp.json()
+    audios = pdata.get("data", {}).get("dash", {}).get("audio") or []
+    if not audios:
+        raise AudioError(f"未取到音频流 ({bv})")
+    best = max(audios, key=lambda a: a.get("bandwidth", 0))
+    return best["baseUrl"]
+
+
+async def _download_audio(song: Song, raw_path: Path) -> None:
+    """下载歌曲来源视频的音频流到 raw_path，失败抛 AudioError"""
+    headers = {"User-Agent": UA, "Referer": HOMEPAGE}
+    try:
+        async with httpx.AsyncClient(
+            headers=headers, follow_redirects=True, timeout=60
+        ) as client:
+            url = await _fetch_audio_url(client, song.bv)
+            async with client.stream("GET", url) as resp:
+                if resp.status_code != 200:
+                    raise AudioError(f"音频下载失败: HTTP {resp.status_code}")
+                with open(raw_path, "wb") as f:
+                    async for chunk in resp.aiter_bytes(65536):
+                        f.write(chunk)
+    except httpx.HTTPError as e:
+        raise AudioError(f"网络请求失败: {e}") from e
+
+
 async def ensure_audio(song: Song, cache_dir: Path) -> Path:
     """确保歌曲音频已缓存，返回缓存文件路径；失败抛 AudioError"""
     target = cache_dir / f"{song.id}.mp3"
     if target.exists():
         return target
 
-    if shutil.which("yt-dlp") is None:
-        raise AudioError("运行环境未安装 yt-dlp，无法下载音频")
+    if shutil.which("ffmpeg") is None:
+        raise AudioError("运行环境未安装 ffmpeg，无法处理音频")
 
     cache_dir.mkdir(parents=True, exist_ok=True)
-    url = f"https://www.bilibili.com/video/{song.bv}"
 
     with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        raw_template = str(tmp_path / "raw.%(ext)s")
-        await _run(
-            [
-                "yt-dlp", "-x", "--audio-format", "mp3",
-                "--no-playlist", "-o", raw_template, url,
-            ]
-        )
-        raws = list(tmp_path.glob("raw.*"))
-        if not raws:
-            raise AudioError("yt-dlp 未产出音频文件")
+        raw_path = Path(tmp) / "raw.m4a"
+        await _download_audio(song, raw_path)
 
-        if song.is_clip:
-            shutil.move(str(raws[0]), str(target))
-        else:
-            if shutil.which("ffmpeg") is None:
-                raise AudioError("运行环境未安装 ffmpeg，无法裁剪音频")
-            await _run(
-                [
-                    "ffmpeg", "-y", "-i", str(raws[0]),
-                    "-ss", str(song.start), "-to", str(song.end),
-                    "-acodec", "libmp3lame", str(target),
-                ]
-            )
+        cmd = ["ffmpeg", "-y", "-i", str(raw_path)]
+        if not song.is_clip:
+            cmd += ["-ss", str(song.start), "-to", str(song.end)]
+        cmd += ["-acodec", "libmp3lame", str(target)]
+        await _run(cmd)
     return target
 ```
 
@@ -845,11 +945,12 @@ Expected: 全部 PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add nonebot_plugin_taozi_music/audio.py tests/test_audio.py
-git commit -m "feat: audio download and clipping pipeline"
+git add pyproject.toml poetry.lock nonebot_plugin_taozi_music/audio.py tests/test_audio.py
+git commit -m "feat: bilibili api audio download and clipping pipeline"
 ```
 
 ---
+
 ### Task 6: commands.py — /桃乐 系列命令（不含「时间」的 scheduler 联动）
 
 **Files:**
@@ -1412,7 +1513,7 @@ git commit -m "feat: daily scheduled push and send-time persistence"
 - 每日定时推送一首歌（QQ 语音条，非文件）
 - 随机不重复选歌，播完一轮自动重置历史
 - 命令点歌、查看歌单、修改每日播放时间
-- 音频提前下载缓存：只下音频（yt-dlp），录播片段按时间戳裁剪（ffmpeg），不存视频
+- 音频提前下载缓存：经 B站官方 API 只下音频流（不存视频），录播片段按时间戳裁剪（ffmpeg）
 
 ## 安装
 
@@ -1424,12 +1525,7 @@ pip install nonebot-plugin-taozi-music
 poetry add nonebot-plugin-taozi-music
 ```
 
-运行环境还需安装外部命令：
-
-```bash
-pip install yt-dlp
-# ffmpeg 见 https://ffmpeg.org/download.html
-```
+运行环境还需安装 ffmpeg（见 https://ffmpeg.org/download.html 或 `brew install ffmpeg`）。音频下载走插件内置的 B站 API 流程，无需 yt-dlp。
 
 协议端需支持语音消息（推荐 NapCat / Lagrange，会自动转码）。
 

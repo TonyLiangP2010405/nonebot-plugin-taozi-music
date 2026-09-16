@@ -62,10 +62,11 @@ nonebot_plugin_taozi_music/
 ### audio.py
 
 - 缓存目录：`data/cache/{id}.mp3`，命中缓存直接使用
-- 未命中：调用 `yt-dlp -x --audio-format mp3` 只下载音频到临时文件
-- 若有 start/end：调用 `ffmpeg -ss start -to end -i ...` 裁剪
-- 产物移入缓存目录；下载/裁剪失败抛出自定义异常，命令层给出友好提示
-- yt-dlp / ffmpeg 不存在时，加载不报错，执行播放命令时提示缺少依赖
+- 未命中：经 B站官方 API 下载音频流（httpx：view 接口取 cid → playurl `fnval=16` 取 DASH 最高码率音频 → 带 UA/Referer 下载 m4a 到临时文件；先访问首页拿 cookie 避免 412 风控）
+- 用 ffmpeg 转码为 mp3；若有 start/end 同时按时间戳裁剪（`-ss`/`-to` 输出选项）
+- 产物写入缓存目录；下载/裁剪失败抛出自定义异常，命令层给出友好提示
+- ffmpeg 不存在时，加载不报错，执行播放命令时提示缺少依赖
+- 不使用 yt-dlp：B站风控 412 已全面拦截（2026-09-16 实测确认）
 - 阻塞子进程调用使用 `asyncio.create_subprocess_exec`，不阻塞事件循环
 
 ### commands.py
@@ -103,7 +104,8 @@ nonebot_plugin_taozi_music/
 - nonebot-plugin-apscheduler
 - nonebot-plugin-localstore（插件数据目录：缓存、播放历史、设置）
 - PyYAML
-- 外部命令：yt-dlp、ffmpeg（README 中说明安装方式）
+- httpx >= 0.27（B站 API 音频下载）
+- 外部命令：ffmpeg（README 中说明安装方式）
 
 ## 7. 错误处理
 
