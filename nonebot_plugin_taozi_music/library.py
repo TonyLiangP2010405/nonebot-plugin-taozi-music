@@ -64,7 +64,11 @@ def load_songs(path: Path = SONGS_FILE) -> list[Song]:
     if not path.exists():
         raise LibraryError(f"歌单文件不存在: {path}")
     try:
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as e:
+        raise LibraryError(f"歌单文件读取失败: {e}") from e
+    try:
+        raw = yaml.safe_load(text)
     except yaml.YAMLError as e:
         raise LibraryError(f"歌单 YAML 解析失败: {e}") from e
     if not isinstance(raw, list) or not raw:

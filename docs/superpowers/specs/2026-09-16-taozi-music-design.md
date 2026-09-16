@@ -45,7 +45,7 @@ nonebot_plugin_taozi_music/
 ├── __init__.py        # PluginMetadata、加载入口
 ├── config.py          # 配置项
 ├── library.py         # 歌单加载/校验、播放历史持久化、随机不重复选歌
-├── audio.py           # yt-dlp 下载音频 + ffmpeg 裁剪 + 缓存管理
+├── audio.py           # B站 API 下载音频 + ffmpeg 裁剪 + 缓存管理
 ├── commands.py        # 命令处理
 ├── scheduler.py       # 每日定时推送（nonebot-plugin-apscheduler）
 └── resources/
@@ -119,7 +119,7 @@ nonebot_plugin_taozi_music/
 - pytest + nonebug：插件加载测试
 - 单测：songs.yaml 校验、随机不重复选歌、历史重置、标题模糊查找、时间格式解析
 - 命令测试（mock Bot）：/桃乐、/桃乐 歌单、/桃乐 点歌、/桃乐 时间
-- 不实际调用 yt-dlp（mock 掉），CI 环境无网络依赖
+- 下载/网络部分用 httpx MockTransport 测试，不实际访问网络，CI 环境无网络依赖
 
 ## 9. 初始歌单收集
 

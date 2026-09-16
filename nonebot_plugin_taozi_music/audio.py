@@ -105,9 +105,11 @@ async def ensure_audio(song: Song, cache_dir: Path) -> Path:
         raw_path = Path(tmp) / "raw.m4a"
         await _download_audio(song, raw_path)
 
+        out_path = Path(tmp) / "out.mp3"
         cmd = ["ffmpeg", "-y", "-i", str(raw_path)]
         if not song.is_clip:
             cmd += ["-ss", str(song.start), "-to", str(song.end)]
-        cmd += ["-acodec", "libmp3lame", str(target)]
+        cmd += ["-acodec", "libmp3lame", str(out_path)]
         await _run(cmd)
+        shutil.move(out_path, target)
     return target

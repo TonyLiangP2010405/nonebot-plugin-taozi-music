@@ -1,4 +1,5 @@
 from nonebot import get_driver, get_plugin_config
+from nonebot.log import logger
 from nonebot.plugin import PluginMetadata
 
 from .config import Config
@@ -30,4 +31,9 @@ async def _register_jobs() -> None:
     send_time = (
         scheduler.load_send_time(commands.DATA_DIR) or _config.taozi_music_send_time
     )
+    if not commands._valid_hhmm(send_time):
+        logger.warning(
+            f"配置 taozi_music_send_time 无效: {send_time}，已回退为默认 21:00"
+        )
+        send_time = "21:00"
     scheduler.register_daily_job(send_time)

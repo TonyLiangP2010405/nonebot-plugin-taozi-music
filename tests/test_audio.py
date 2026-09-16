@@ -79,6 +79,23 @@ async def test_ensure_audio_download_failure(tmp_path, monkeypatch):
     assert not (tmp_path / "1.mp3").exists()
 
 
+async def test_ensure_audio_ffmpeg_failure_leaves_no_cache(tmp_path, monkeypatch):
+    async def fake_download(song, raw_path):
+        raw_path.write_bytes(b"audio")
+
+    async def fail_run(cmd):
+        # 模拟 ffmpeg 写了一部分然后失败
+        Path(cmd[-1]).write_bytes(b"partial")
+        raise AudioError("命令执行失败 (ffmpeg): boom")
+
+    monkeypatch.setattr(audio, "_download_audio", fake_download)
+    monkeypatch.setattr(audio, "_run", fail_run)
+    monkeypatch.setattr(audio.shutil, "which", lambda name: "/usr/bin/" + name)
+    with pytest.raises(AudioError):
+        await ensure_audio(_song(), tmp_path)
+    assert not (tmp_path / "1.mp3").exists()
+
+
 async def test_fetch_audio_url_picks_highest_bandwidth():
     def handler(request: httpx.Request) -> httpx.Response:
         url = str(request.url)
