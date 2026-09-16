@@ -38,20 +38,38 @@ async def _fetch_audio_url(client: httpx.AsyncClient, bv: str) -> str:
     await client.get(HOMEPAGE)
 
     resp = await client.get(VIEW_API, params={"bvid": bv})
-    data = resp.json()
-    if data.get("code") != 0:
-        raise AudioError(f"获取视频信息失败 ({bv}): code={data.get('code')}")
-    cid = data["data"]["cid"]
+    if resp.status_code != 200:
+        raise AudioError(f"获取视频信息失败 ({bv}): HTTP {resp.status_code}")
+    try:
+        data = resp.json()
+        code = data.get("code")
+        cid = (data.get("data") or {}).get("cid")
+    except (ValueError, KeyError, TypeError, AttributeError) as e:
+        raise AudioError(f"获取视频信息失败 ({bv}): 响应格式异常") from e
+    if code != 0:
+        raise AudioError(f"获取视频信息失败 ({bv}): code={code}")
+    if not cid:
+        raise AudioError(f"获取视频信息失败 ({bv}): 未取到 cid")
 
-    resp = await client.get(
-        PLAYURL_API, params={"bvid": bv, "cid": cid, "fnval": 16}
-    )
-    pdata = resp.json()
-    audios = pdata.get("data", {}).get("dash", {}).get("audio") or []
+    resp = await client.get(PLAYURL_API, params={"bvid": bv, "cid": cid, "fnval": 16})
+    if resp.status_code != 200:
+        raise AudioError(f"未取到音频流 ({bv}): HTTP {resp.status_code}")
+    try:
+        pdata = resp.json()
+        dash = (pdata.get("data") or {}).get("dash") or {}
+        audios = dash.get("audio") or []
+    except (ValueError, KeyError, TypeError, AttributeError) as e:
+        raise AudioError(f"未取到音频流 ({bv}): 响应格式异常") from e
     if not audios:
         raise AudioError(f"未取到音频流 ({bv})")
-    best = max(audios, key=lambda a: a.get("bandwidth", 0))
-    return best["baseUrl"]
+    try:
+        best = max(audios, key=lambda a: a.get("bandwidth", 0))
+        url = best["baseUrl"]
+    except (ValueError, KeyError, TypeError, AttributeError) as e:
+        raise AudioError(f"未取到音频流 ({bv}): 响应格式异常") from e
+    if not url:
+        raise AudioError(f"未取到音频流 ({bv})")
+    return url
 
 
 async def _download_audio(song: Song, raw_path: Path) -> None:

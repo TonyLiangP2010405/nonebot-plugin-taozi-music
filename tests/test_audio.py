@@ -129,3 +129,38 @@ async def test_fetch_audio_url_no_audio_stream():
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         with pytest.raises(AudioError, match="未取到音频流"):
             await audio._fetch_audio_url(client, "BV1xx411c7mD")
+
+
+async def test_fetch_audio_url_null_data():
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if "web-interface/view" in url:
+            return httpx.Response(200, json={"code": 0, "data": None})
+        return httpx.Response(200)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AudioError):
+            await audio._fetch_audio_url(client, "BV1xx411c7mD")
+
+
+async def test_fetch_audio_url_non_json_response():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "web-interface/view" in str(request.url):
+            return httpx.Response(412, text="<html>blocked</html>")
+        return httpx.Response(200)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AudioError):
+            await audio._fetch_audio_url(client, "BV1xx411c7mD")
+
+
+async def test_fetch_audio_url_missing_cid():
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if "web-interface/view" in url:
+            return httpx.Response(200, json={"code": 0, "data": {}})
+        return httpx.Response(200)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AudioError):
+            await audio._fetch_audio_url(client, "BV1xx411c7mD")
