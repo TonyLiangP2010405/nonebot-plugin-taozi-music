@@ -1,5 +1,43 @@
-# 占位条目，Task 4 会替换为真实收集的歌单
+# 小小桃子呦（B站 UID 6867955，直播间 22725947）真实唱歌视频歌单
+# 数据来源：bilibili 搜索 + bili video 逐条核验（2026-09-16）
+# 全部为切片UP主切好的唱歌视频，整段即歌，无需裁剪
 - id: 1
-  title: 占位歌
-  bv: BV1xx411c7mD
-  note: 占位
+  title: 耀斑（桃纸live）
+  bv: BV1Ui6GBmEyC
+  note: 切片UP主：双刀纸袋布；简介挂小小桃纸哟主页 space.bilibili.com/6867955
+- id: 2
+  title: Poker Face（桃纸即兴演唱live）
+  bv: BV1AAmdB1Eak
+  note: 切片UP主：双刀纸袋布；桃纸即兴演唱 Eric cartman 版 poker face
+- id: 3
+  title: 昔涟（桃纸live）
+  bv: BV1ppTg6XEE1
+  note: 切片UP主：鸭鸭的呆毛
+- id: 4
+  title: 离歌（桃纸翻唱live）
+  bv: BV1n56xBgEUN
+  note: 切片UP主：记录园长的芋头
+- id: 5
+  title: 搁浅（时雨×桃纸合唱版）
+  bv: BV13okEBLEK9
+  note: 切片UP主：鸭鸭的呆毛；与时雨ioo合唱
+- id: 6
+  title: 搁浅+耀斑（时雨听桃纸唱）
+  bv: BV1wLkJBAEnZ
+  note: 切片UP主：鸭鸭的呆毛；时雨听歌reaction，含桃纸两首完整演唱
+- id: 7
+  title: Letting Go/红色高跟鞋/鲜花（桃纸歌切合集）
+  bv: BV1LdtU6TEgr
+  note: 切片UP主：鸭鸭的呆毛
+- id: 8
+  title: Let It Go 等八首（桃纸歌切合集）
+  bv: BV1NBh56aEMn
+  note: 切片UP主：鸭鸭的呆毛；含 Let It Go/想你的夜/连名带姓/花海/Wrecking Ball/Rolling In The Deep/灰色头像/甲乙丙丁
+- id: 9
+  title: 来自天堂的魔鬼 等十六首（桃纸歌切合集）
+  bv: BV1JBq6BgEwD
+  note: 切片UP主：鸭鸭的呆毛；含 来自天堂的魔鬼/不眠之夜/你把我灌醉/杀死那个石家庄人/你要跳舞吗/水星记/凄美地/We Are the Champions/Christmas In My Heart/DEAR JOHN/麒麟/烟火里的尘埃/光年之外/Poker Face/我多想拥抱你/奇妙能力歌
+- id: 10
+  title: 桃纸歌会合集19首
+  bv: BV1rVXsBNEwJ
+  note: 切片UP主：寒洛茗；含 烟火里的尘埃/for ya/鲜花/奇妙能力歌/火红的萨日朗/站在草原望北京/野火/Poker Face/来自天堂的魔鬼/素颜/有何不可/左手指月/晴天/孤单北半球/她的睫毛/不眠之夜/耀斑/宝贝/走马
