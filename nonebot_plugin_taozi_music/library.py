@@ -1,7 +1,10 @@
+import json
+import random
 from pathlib import Path
 from typing import Optional
 
 import yaml
+from nonebot.log import logger
 from pydantic import BaseModel, field_validator
 
 SONGS_FILE = Path(__file__).parent / "resources" / "songs.yaml"
@@ -91,3 +94,81 @@ def load_songs(path: Path = SONGS_FILE) -> list[Song]:
                 raise LibraryError(f"歌单第 {i} 条 end 必须大于 start: {song.title}")
         songs.append(song)
     return songs
+
+
+HISTORY_FILE = "history.json"
+
+
+class Library:
+    def __init__(self, songs: list[Song], data_dir: Path):
+        self._songs = songs
+        self._data_dir = data_dir
+        self._history_path = data_dir / HISTORY_FILE
+
+    @property
+    def songs(self) -> list[Song]:
+        return self._songs
+
+    def get(self, song_id: int) -> Optional[Song]:
+        return next((s for s in self._songs if s.id == song_id), None)
+
+    def find(self, keyword: str) -> list[Song]:
+        keyword = keyword.strip()
+        if keyword.isdigit():
+            song = self.get(int(keyword))
+            return [song] if song else []
+        return [s for s in self._songs if keyword in s.title]
+
+    @property
+    def played_ids(self) -> set[int]:
+        if not self._history_path.exists():
+            return set()
+        try:
+            data = json.loads(self._history_path.read_text(encoding="utf-8"))
+            return {int(i) for i in data.get("played", [])}
+        except (json.JSONDecodeError, ValueError, TypeError, AttributeError):
+            logger.warning(f"播放历史文件损坏，已忽略: {self._history_path}")
+            return set()
+
+    def _save_history(self, played: set[int]) -> None:
+        self._data_dir.mkdir(parents=True, exist_ok=True)
+        self._history_path.write_text(
+            json.dumps({"played": sorted(played)}, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def mark_played(self, song_id: int) -> None:
+        played = self.played_ids
+        played.add(song_id)
+        self._save_history(played)
+
+    def reset_history(self) -> None:
+        self._save_history(set())
+
+    def pick_random(self) -> Optional[Song]:
+        """随机选一首没播过的并计入历史；全部播过则重置历史后重新选"""
+        if not self._songs:
+            return None
+        played = self.played_ids
+        candidates = [s for s in self._songs if s.id not in played]
+        if not candidates:
+            self.reset_history()
+            candidates = list(self._songs)
+        song = random.choice(candidates)
+        self.mark_played(song.id)
+        return song
+
+
+_library: Optional[Library] = None
+
+
+def get_library(data_dir: Path, songs_path: Path = SONGS_FILE) -> Library:
+    global _library
+    if _library is None:
+        _library = Library(load_songs(songs_path), data_dir)
+    return _library
+
+
+def _reset_library_cache() -> None:
+    global _library
+    _library = None

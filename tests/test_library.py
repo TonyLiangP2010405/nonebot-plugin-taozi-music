@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from nonebot_plugin_taozi_music.library import (
+    Library,
     LibraryError,
     Song,
     load_songs,
@@ -102,3 +103,57 @@ def test_load_songs_end_before_start(tmp_path):
 def test_song_invalid_bv():
     with pytest.raises(Exception):
         Song(id=1, title="歌A", bv="av12345")
+
+
+def _make_library(tmp_path: Path, count: int = 3) -> Library:
+    songs = [
+        Song(id=i, title=f"歌{i}", bv=f"BV1xx411c7m{i}") for i in range(1, count + 1)
+    ]
+    return Library(songs, tmp_path)
+
+
+def test_get_by_id(tmp_path):
+    lib = _make_library(tmp_path)
+    assert lib.get(2).title == "歌2"
+    assert lib.get(99) is None
+
+
+def test_find_by_id_and_title(tmp_path):
+    lib = _make_library(tmp_path)
+    assert [s.id for s in lib.find("2")] == [2]
+    assert [s.id for s in lib.find("歌")] == [1, 2, 3]
+    assert lib.find("不存在") == []
+
+
+def test_pick_random_no_repeat_until_exhausted(tmp_path):
+    lib = _make_library(tmp_path, count=3)
+    picked = [lib.pick_random().id for _ in range(3)]
+    assert sorted(picked) == [1, 2, 3]
+    assert lib.played_ids == {1, 2, 3}
+
+
+def test_pick_random_resets_after_full_round(tmp_path):
+    lib = _make_library(tmp_path, count=2)
+    lib.pick_random()
+    lib.pick_random()
+    song = lib.pick_random()  # 触发重置
+    assert song.id in {1, 2}
+    assert lib.played_ids == {song.id}
+
+
+def test_history_persists_across_instances(tmp_path):
+    lib = _make_library(tmp_path, count=3)
+    lib.mark_played(1)
+    lib2 = _make_library(tmp_path, count=3)
+    assert lib2.played_ids == {1}
+
+
+def test_pick_random_empty_library(tmp_path):
+    lib = Library([], tmp_path)
+    assert lib.pick_random() is None
+
+
+def test_corrupted_history_ignored(tmp_path):
+    lib = _make_library(tmp_path)
+    (tmp_path / "history.json").write_text("not-json", encoding="utf-8")
+    assert lib.played_ids == set()
