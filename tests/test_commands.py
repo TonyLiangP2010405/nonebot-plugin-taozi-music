@@ -3,11 +3,13 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     Message,
     MessageSegment,
+    PrivateMessageEvent,
 )
 from nonebot.adapters.onebot.v11.event import Sender
 from nonebug import App
 
 import nonebot_plugin_taozi_music.commands as commands
+from nonebot_plugin_taozi_music import settings
 from nonebot_plugin_taozi_music.library import Library, LibraryError, Song
 
 
@@ -20,6 +22,23 @@ def make_group_event(text: str, user_id: int = 10001) -> GroupMessageEvent:
         sub_type="normal",
         message_id=1,
         group_id=88888,
+        user_id=user_id,
+        message=Message(text),
+        raw_message=text,
+        original_message=Message(text),
+        font=0,
+        sender=Sender(user_id=user_id, nickname="测试"),
+    )
+
+
+def make_private_event(text: str, user_id: int = 10001) -> PrivateMessageEvent:
+    return PrivateMessageEvent(
+        time=1700000000,
+        self_id=10002,
+        post_type="message",
+        message_type="private",
+        sub_type="friend",
+        message_id=1,
         user_id=user_id,
         message=Message(text),
         raw_message=text,
@@ -169,3 +188,208 @@ async def test_time_set_ok(app: App, monkeypatch, tmp_path):
         )
         ctx.should_finished()
     assert recorded == ["21:30"]
+
+
+def _use_tmp_data_dir(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(commands, "DATA_DIR", tmp_path)
+
+
+async def test_add_group_no_arg_uses_current_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 加群")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "已添加并开启每日推送：88888", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {88888: True}
+
+
+async def test_add_group_with_explicit_id(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 加群 12345")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "已添加并开启每日推送：12345", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {12345: True}
+
+
+async def test_add_group_duplicate_keeps_state(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 88888, enabled=False)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 加群")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "该群已在推送列表，状态：关闭", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {88888: False}
+
+
+async def test_add_group_private(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_private_event("/桃乐 加群 12345")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "已添加并开启每日推送：12345", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {12345: True}
+
+
+async def test_add_group_private_requires_group_id(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_private_event("/桃乐 加群")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "私聊里请带上群号，例如 /桃乐 加群 123456", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {}
+
+
+async def test_private_remove_requires_group_id(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_private_event("/桃乐 删群")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "私聊里请带上群号，例如 /桃乐 加群 123456", result=None, bot=bot
+        )
+        ctx.should_finished()
+
+
+async def test_remove_group_in_group_chat(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 88888)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 删群")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "已从推送列表删除：88888", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {}
+
+
+async def test_remove_group_not_in_list(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 删群 55555")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "该群不在推送列表", result=None, bot=bot)
+        ctx.should_finished()
+
+
+async def test_enable_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 88888, enabled=False)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 开启")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "已开启每日推送：88888", result=None, bot=bot)
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {88888: True}
+
+
+async def test_disable_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 88888)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 关闭")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "已关闭每日推送：88888", result=None, bot=bot)
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {88888: False}
+
+
+async def test_enable_unknown_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 开启 12345")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "该群不在推送列表，先用 /桃乐 加群", result=None, bot=bot
+        )
+        ctx.should_finished()
+
+
+async def test_disable_unknown_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 关闭 12345")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "该群不在推送列表，先用 /桃乐 加群", result=None, bot=bot
+        )
+        ctx.should_finished()
+
+
+async def test_private_disable_group(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 12345, enabled=True)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_private_event("/桃乐 关闭 12345")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "已关闭每日推送：12345", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert settings.get_groups(tmp_path) == {12345: False}
+
+
+async def test_group_list(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    settings.add_group(tmp_path, 123456)
+    settings.add_group(tmp_path, 789012, enabled=False)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 群列表")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event,
+            "🎵 推送群列表：\n123456（开启）\n789012（关闭）",
+            result=None,
+            bot=bot,
+        )
+        ctx.should_finished()
+
+
+async def test_group_list_empty(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 群列表")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "还没有配置推送群", result=None, bot=bot)
+        ctx.should_finished()
+
+
+async def test_group_id_not_decimal(app, monkeypatch, tmp_path):
+    _use_tmp_data_dir(monkeypatch, tmp_path)
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 加群 abc")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "群号格式不对：abc", result=None, bot=bot)
+        ctx.should_finished()
