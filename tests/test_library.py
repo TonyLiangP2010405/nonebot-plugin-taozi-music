@@ -125,6 +125,12 @@ def test_find_by_id_and_title(tmp_path):
     assert lib.find("不存在") == []
 
 
+def test_find_unicode_digit_like_falls_back_to_title(tmp_path):
+    lib = _make_library(tmp_path)
+    assert lib.find("①") == []
+    assert [s.id for s in lib.find("２")] == [2]
+
+
 def test_pick_random_no_repeat_until_exhausted(tmp_path):
     lib = _make_library(tmp_path, count=3)
     picked = [lib.pick_random().id for _ in range(3)]

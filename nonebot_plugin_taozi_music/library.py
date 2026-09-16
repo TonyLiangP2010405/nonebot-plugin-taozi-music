@@ -114,7 +114,7 @@ class Library:
 
     def find(self, keyword: str) -> list[Song]:
         keyword = keyword.strip()
-        if keyword.isdigit():
+        if keyword.isdecimal():
             song = self.get(int(keyword))
             return [song] if song else []
         return [s for s in self._songs if keyword in s.title]
