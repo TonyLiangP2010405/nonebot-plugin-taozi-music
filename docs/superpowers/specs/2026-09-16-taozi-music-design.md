@@ -101,7 +101,8 @@ nonebot_plugin_taozi_music/
 - nonebot2 >= 2.2.0
 - nonebot-adapter-onebot >= 2.4.0
 - nonebot-plugin-apscheduler
-- httpx（备用网络请求）
+- nonebot-plugin-localstore（插件数据目录：缓存、播放历史、设置）
+- PyYAML
 - 外部命令：yt-dlp、ffmpeg（README 中说明安装方式）
 
 ## 7. 错误处理
