@@ -8,7 +8,7 @@ require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler  # noqa: E402
 
 from .audio import AudioError  # noqa: E402
-from .commands import DATA_DIR, play_song  # noqa: E402
+from .commands import DATA_DIR, _valid_hhmm, play_song  # noqa: E402
 from .config import Config  # noqa: E402
 from .library import LibraryError, get_library  # noqa: E402
 
@@ -22,9 +22,12 @@ def load_send_time(data_dir: Path) -> Optional[str]:
         return None
     try:
         value = json.loads(path.read_text(encoding="utf-8"))["send_time"]
-        return str(value)
     except (json.JSONDecodeError, KeyError, TypeError):
         return None
+    send_time = str(value)
+    if not _valid_hhmm(send_time):
+        return None
+    return send_time
 
 
 def save_send_time(data_dir: Path, send_time: str) -> None:
@@ -76,10 +79,13 @@ async def daily_push() -> None:
     except AudioError as e:
         logger.warning(f"每日桃乐推送音频准备失败：{e}")
         for group in config.taozi_music_groups:
-            await bot.send_group_msg(
-                group_id=group,
-                message=f"今日桃乐放送失败：《{song.title}》{e}",
-            )
+            try:
+                await bot.send_group_msg(
+                    group_id=group,
+                    message=f"今日桃乐放送失败：《{song.title}》{e}",
+                )
+            except Exception:
+                logger.exception(f"每日桃乐推送到群 {group} 失败")
         return
 
     for group in config.taozi_music_groups:

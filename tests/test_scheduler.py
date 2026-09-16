@@ -20,6 +20,23 @@ def test_load_send_time_corrupted(tmp_path):
     assert load_send_time(tmp_path) is None
 
 
+def test_load_send_time_invalid_values(tmp_path):
+    bad_values = (
+        '{"send_time": {"a": 1}}',
+        '{"send_time": 123}',
+        '{"send_time": "25:00"}',
+        '{"send_time": "abc"}',
+    )
+    for bad in bad_values:
+        (tmp_path / "settings.json").write_text(bad, encoding="utf-8")
+        assert load_send_time(tmp_path) is None
+
+
+def test_load_send_time_valid(tmp_path):
+    (tmp_path / "settings.json").write_text('{"send_time": "8:05"}', encoding="utf-8")
+    assert load_send_time(tmp_path) == "8:05"
+
+
 def test_register_daily_job():
     register_daily_job("21:30")
     job = scheduler_mod.scheduler.get_job(DAILY_JOB_ID)
