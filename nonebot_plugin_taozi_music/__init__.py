@@ -1,3 +1,4 @@
+from nonebot import get_driver, get_plugin_config
 from nonebot.plugin import PluginMetadata
 
 from .config import Config
@@ -17,3 +18,16 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
     supported_adapters={"~onebot.v11"},
 )
+
+from . import commands, scheduler  # noqa: E402,F401
+
+_driver = get_driver()
+_config = get_plugin_config(Config)
+
+
+@_driver.on_startup
+async def _register_jobs() -> None:
+    send_time = (
+        scheduler.load_send_time(commands.DATA_DIR) or _config.taozi_music_send_time
+    )
+    scheduler.register_daily_job(send_time)

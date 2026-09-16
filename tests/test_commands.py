@@ -150,3 +150,22 @@ async def test_time_invalid_format(app: App, monkeypatch, tmp_path):
             result=None, bot=bot,
         )
         ctx.should_finished()
+
+
+async def test_time_set_ok(app: App, monkeypatch, tmp_path):
+    _patch_library(monkeypatch, tmp_path)
+    from nonebot_plugin_taozi_music import scheduler as scheduler_mod
+
+    recorded = []
+    monkeypatch.setattr(
+        scheduler_mod, "update_send_time", lambda t: recorded.append(t)
+    )
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 时间 21:30")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(
+            event, "每日播放时间已设置为 21:30", result=None, bot=bot
+        )
+        ctx.should_finished()
+    assert recorded == ["21:30"]
