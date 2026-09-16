@@ -2,7 +2,7 @@
 name = "nonebot-plugin-taozi-music"
 version = "0.1.0"
 description = "每天定时在群里语音播放小小桃子呦唱过的歌"
-authors = ["taozi-fan"]
+authors = ["TonyLiangP2010405"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "nonebot_plugin_taozi_music" }]

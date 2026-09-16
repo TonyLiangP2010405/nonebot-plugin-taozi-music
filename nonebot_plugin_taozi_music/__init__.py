@@ -15,7 +15,7 @@ __plugin_meta__ = PluginMetadata(
         "（以上命令仅 SUPERUSER 可用）"
     ),
     type="application",
-    homepage="https://github.com/taozi-fan/nonebot-plugin-taozi-music",
+    homepage="https://github.com/TonyLiangP2010405/nonebot-plugin-taozi-music",
     config=Config,
     supported_adapters={"~onebot.v11"},
 )
