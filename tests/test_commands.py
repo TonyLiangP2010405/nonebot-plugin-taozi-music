@@ -1,3 +1,5 @@
+import base64
+
 from nonebot.adapters.onebot.v11 import (
     Bot,
     GroupMessageEvent,
@@ -393,3 +395,16 @@ async def test_group_id_not_decimal(app, monkeypatch, tmp_path):
         ctx.receive_event(bot, event)
         ctx.should_call_send(event, "群号格式不对：abc", result=None, bot=bot)
         ctx.should_finished()
+
+
+async def test_play_song_returns_base64_record(monkeypatch, tmp_path):
+    fake = tmp_path / "1.mp3"
+    fake.write_bytes(b"fake-audio")
+
+    async def fake_ensure(song, cache_dir):
+        return fake
+
+    monkeypatch.setattr(commands, "ensure_audio", fake_ensure)
+    segment = await commands.play_song(Song(id=1, title="歌A", bv="BV1xx411c7mD"))
+    expected = "base64://" + base64.b64encode(b"fake-audio").decode()
+    assert segment.data["file"] == expected

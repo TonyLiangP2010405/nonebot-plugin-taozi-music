@@ -1,3 +1,4 @@
+import base64
 from typing import Optional
 
 from nonebot import on_command
@@ -31,9 +32,13 @@ UNKNOWN_HINT = (
 
 
 async def play_song(song: Song) -> MessageSegment:
-    """准备音频并返回语音消息段，失败抛 AudioError"""
+    """准备音频并返回语音消息段（base64 内联，协议端无需访问本机文件）。
+
+    失败抛 AudioError。
+    """
     path = await ensure_audio(song, CACHE_DIR)
-    return MessageSegment.record(path.as_uri())
+    b64 = base64.b64encode(path.read_bytes()).decode()
+    return MessageSegment.record(f"base64://{b64}")
 
 
 def _valid_hhmm(value: str) -> bool:

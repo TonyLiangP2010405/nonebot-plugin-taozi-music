@@ -22,7 +22,7 @@ poetry add nonebot-plugin-taozi-music
 
 运行环境还需安装 ffmpeg（见 https://ffmpeg.org/download.html 或 `brew install ffmpeg`）。音频下载走插件内置的 B站 API 流程，无需 yt-dlp。
 
-协议端需支持语音消息（推荐 NapCat / Lagrange，会自动转码）。
+协议端需支持语音消息（推荐 NapCat / Lagrange，会自动转码）。语音以 base64 内联发送，协议端（NapCat/Lagrange 等）可以与 bot 不在同一台机器，无需共享文件系统。
 
 ## 配置
 
