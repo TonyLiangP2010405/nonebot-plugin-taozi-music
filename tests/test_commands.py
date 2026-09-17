@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11 import (
     PrivateMessageEvent,
 )
 from nonebot.adapters.onebot.v11.event import Sender
+from nonebot.adapters.onebot.v11.exception import ActionFailed
 from nonebug import App
 
 import nonebot_plugin_taozi_music.commands as commands
@@ -408,3 +409,38 @@ async def test_play_song_returns_base64_record(monkeypatch, tmp_path):
     segment = await commands.play_song(Song(id=1, title="歌A", bv="BV1xx411c7mD"))
     expected = "base64://" + base64.b64encode(b"fake-audio").decode()
     assert segment.data["file"] == expected
+
+
+async def test_send_voice_failure_surfaces_detail(app: App, monkeypatch, tmp_path):
+    _patch_library(
+        monkeypatch, tmp_path, songs=[Song(id=1, title="歌A", bv="BV1xx411c7mD")]
+    )
+
+    async def fake_play(song):
+        return MessageSegment.record("base64://fake")
+
+    monkeypatch.setattr(commands, "play_song", fake_play)
+    failure = ActionFailed(
+        status="failed",
+        retcode=1200,
+        message="语音转换失败, 请检查语音文件是否正常",
+        wording="语音转换失败, 请检查语音文件是否正常",
+    )
+    async with app.test_matcher(commands.music) as ctx:
+        bot = ctx.create_bot(base=Bot, self_id="10002")
+        event = make_group_event("/桃乐 点歌 1")
+        ctx.receive_event(bot, event)
+        ctx.should_call_send(event, "🎵 正在播放：歌A", result=None, bot=bot)
+        ctx.should_call_send(
+            event,
+            MessageSegment.record("base64://fake"),
+            exception=failure,
+            bot=bot,
+        )
+        ctx.should_call_send(
+            event,
+            "语音发送失败：语音转换失败, 请检查语音文件是否正常（详见机器人日志）",
+            result=None,
+            bot=bot,
+        )
+        ctx.should_finished()

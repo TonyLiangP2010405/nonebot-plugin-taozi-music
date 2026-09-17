@@ -175,8 +175,12 @@ async def _send_song(song: Song) -> None:
         return
     try:
         await music.send(segment)
-    except Exception:
+    except Exception as e:
         logger.exception("语音发送失败")
-        await music.finish(
-            "语音发送失败，请检查协议端（NapCat/Lagrange）是否支持语音消息"
-        )
+        info = getattr(e, "info", None)
+        detail = (
+            (info.get("message") or info.get("wording"))
+            if isinstance(info, dict)
+            else None
+        ) or getattr(e, "message", None) or getattr(e, "wording", None) or str(e)
+        await music.finish(f"语音发送失败：{detail}（详见机器人日志）")
