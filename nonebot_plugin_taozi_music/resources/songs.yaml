@@ -41,3 +41,68 @@
   title: 桃纸歌会合集19首
   bv: BV1rVXsBNEwJ
   note: 切片UP主：寒洛茗；含 烟火里的尘埃/for ya/鲜花/奇妙能力歌/火红的萨日朗/站在草原望北京/野火/Poker Face/来自天堂的魔鬼/素颜/有何不可/左手指月/晴天/孤单北半球/她的睫毛/不眠之夜/耀斑/宝贝/走马
+# ==== 2026-09-17 扩充（id 11-26）：多轮 bili 搜索 + bili video 逐条核验，简介均挂 space.bilibili.com/6867955 ====
+- id: 11
+  title: 桃纸演唱会十首（突然的自我/空城/Fearless/也许明天/爱我还是他/一万次悲伤/来自天堂的魔鬼/没那么简单/你的背包/关键词）
+  bv: BV1A6KA6NE9s
+  note: 切片UP主：鸭鸭的呆毛；「久违的演唱会」直播整曲切片版（对应小号录播 BV1dcKK6tEMK 的 10 个唱歌分P），简介挂 space.bilibili.com/6867955
+- id: 12
+  title: 歌剧2+Lovin' You（桃纸海豚音双高音）
+  bv: BV1wcb163E9Y
+  note: 切片UP主：鸭鸭的呆毛；《歌剧2（Опера №2）》《Lovin' You》狂飙海豚音，简介挂 space.bilibili.com/6867955
+- id: 13
+  title: 怒放的生命+怎么说我不爱你+Lemon Tree（桃纸歌切合集）
+  bv: BV1rTckzrE5H
+  note: 切片UP主：鸭鸭的呆毛；三首连唱，简介挂 space.bilibili.com/6867955
+- id: 14
+  title: 一路向北+听海+New Boy+告白气球（桃纸歌切合集）
+  bv: BV1AArrBoEnn
+  note: 切片UP主：鸭鸭的呆毛；时雨听完《一路向北》直接风了，四首连唱，简介挂 space.bilibili.com/6867955
+- id: 15
+  title: 我的好妈妈+呼吸决定+理想（桃纸歌切合集）
+  bv: BV1GitV6PEJY
+  note: 切片UP主：鸭鸭的呆毛；三首连唱，简介挂 space.bilibili.com/6867955
+- id: 16
+  title: 耀斑+鲜花（桃纸再唱版）
+  bv: BV1r5cGzsEDr
+  note: 切片UP主：鸭鸭的呆毛；再唱《耀斑》《鲜花》两首连唱（与 id1/id7 不同切片），简介挂 space.bilibili.com/6867955
+- id: 17
+  title: 耀斑（桃纸再唱，影月月/自由魂/念熙/小紫围观）
+  bv: BV1pv8B6ZEUr
+  note: 切片UP主：鸭鸭的呆毛；再唱《耀斑》整段（含围观主播少量说话声），简介挂 space.bilibili.com/6867955
+- id: 18
+  title: 来自天堂的魔鬼（桃纸顶级高音live）
+  bv: BV1GUqSBWEbd
+  note: 切片UP主：小羊五月；单曲整段（与 id9 合集中的同曲不同切片），简介挂 space.bilibili.com/6867955 + 直播间 22725947
+- id: 19
+  title: 不分手的恋爱（桃纸封神力作）
+  bv: BV1ANSfBZEET
+  note: 切片UP主：寒洛茗；单曲整段，简介挂 space.bilibili.com/6867955
+- id: 20
+  title: 鲜花（桃纸献唱live）
+  bv: BV1qsreBbE97
+  note: 切片UP主：寒洛茗；单曲整段（与 id7 合集中的同曲不同切片），简介挂 space.bilibili.com/6867955
+- id: 21
+  title: 小小桃歌曲合集（带歌词）
+  bv: BV1L4fcYnEqn
+  note: 切片UP主：三绿一百盒；82 分钟演唱合集带歌词（含 Poker Face 等），简介挂 space.bilibili.com/6867955 + 直播间 22725947
+- id: 22
+  title: 第二届桃莱美入围桃曲合集（2026.01-02 直播演唱曲目）
+  bv: BV1ucFQzyEKM
+  note: 切片UP主：桃神的二表妹；3 小时 23 分钟直播演唱曲目合集，简介挂 space.bilibili.com/6867955 + 直播间 22725947
+- id: 23
+  title: 第三届桃莱美入围桃曲合集（2026.02-03 直播唱歌切片）
+  bv: BV1Tv9KBwEGk
+  note: 切片UP主：桃神的二表妹；3 小时 5 分钟直播唱歌切片合集（不含返场），简介挂 space.bilibili.com/6867955 + 直播间 22725947
+- id: 24
+  title: 耀斑（桃纸唱给豆包，AI 都被唱宕机）
+  bv: BV179h56HEgx
+  note: 切片UP主：鸭鸭的呆毛；直播唱《耀斑》给豆包猜歌，含互动聊天，简介挂 space.bilibili.com/6867955
+- id: 25
+  title: 桃神唱歌让豆包猜歌（把豆包干死机）
+  bv: BV1YJh56yEfo
+  note: 切片UP主：嗤纸条；唱歌猜歌互动（含短唱段与聊天），简介挂直播间 live.bilibili.com/22725947
+- id: 26
+  title: 克苟×桃神同唱耀斑+爱上雷神（梦幻联动）
+  bv: BV1gjLp6RE1m
+  note: 切片UP主：樱火龙Miko；与克利咕咕兰联动同唱，含双方人声，标题标注【小小桃纸哟】
