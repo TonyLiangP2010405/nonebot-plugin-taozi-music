@@ -106,3 +106,86 @@
   title: 克苟×桃神同唱耀斑+爱上雷神（梦幻联动）
   bv: BV1gjLp6RE1m
   note: 切片UP主：樱火龙Miko；与克利咕咕兰联动同唱，含双方人声，标题标注【小小桃纸哟】
+# ==== 2026-09-17 扩充（id 27-42）：小号「久违的演唱会」录播 BV1dcKK6tEMK 唱歌分P ====
+# part = 站内实际分P页码（下载时按页码取该分P 的 cid）；上传者把开场闲聊标作 P0，故分P标题编号比页码小 1，且有两个「P10」
+# 非唱歌分P未收录：分P 1（开场闲聊）、分P 3（不会唱 纯欣赏）
+- id: 27
+  title: FearLess（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 2
+  note: 主播小号演唱会录播 分P 2
+- id: 28
+  title: 爱我还是他（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 4
+  note: 主播小号演唱会录播 分P 4
+- id: 29
+  title: 一万次悲伤（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 5
+  note: 主播小号演唱会录播 分P 5
+- id: 30
+  title: 来自天堂的魔鬼（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 6
+  note: 主播小号演唱会录播 分P 6
+- id: 31
+  title: 也许明天（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 7
+  note: 主播小号演唱会录播 分P 7
+- id: 32
+  title: 没那么简单（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 8
+  note: 主播小号演唱会录播 分P 8
+- id: 33
+  title: 空城（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 9
+  note: 主播小号演唱会录播 分P 9
+- id: 34
+  title: 你的背包（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 10
+  note: 主播小号演唱会录播 分P 10
+- id: 35
+  title: 关键词（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 11
+  note: 主播小号演唱会录播 分P 11
+- id: 36
+  title: 不为谁而作的歌（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 12
+  note: 主播小号演唱会录播 分P 12
+- id: 37
+  title: 奇妙能力歌（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 13
+  note: 主播小号演唱会录播 分P 13
+- id: 38
+  title: 上学威龙（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 14
+  note: 主播小号演唱会录播 分P 14
+- id: 39
+  title: 鲜花（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 15
+  note: 主播小号演唱会录播 分P 15
+- id: 40
+  title: Poker Face（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 16
+  note: 主播小号演唱会录播 分P 16
+- id: 41
+  title: 爱啦啦（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 17
+  note: 主播小号演唱会录播 分P 17
+- id: 42
+  title: 突然的自我（桃纸演唱会live）
+  bv: BV1dcKK6tEMK
+  part: 18
+  note: 主播小号演唱会录播 分P 18（站内分P标题为「听~见你说」，即《突然的自我》开头歌词「听见你说，朝阳起又落」；id11 合集十首与本视频各分P一一对应可交叉验证）

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from nonebot_plugin_taozi_music.library import (
     Library,
@@ -103,6 +104,50 @@ def test_load_songs_end_before_start(tmp_path):
 def test_song_invalid_bv():
     with pytest.raises(Exception):
         Song(id=1, title="歌A", bv="av12345")
+
+
+def test_song_part_default_none():
+    song = Song(id=1, title="歌A", bv="BV1xx411c7mD")
+    assert song.part is None
+
+
+def test_song_part_positive_ok():
+    assert Song(id=1, title="歌A", bv="BV1xx411c7mD", part=2).part == 2
+
+
+@pytest.mark.parametrize("bad_part", [0, -1])
+def test_song_part_must_be_at_least_one(bad_part):
+    with pytest.raises(ValidationError):
+        Song(id=1, title="歌A", bv="BV1xx411c7mD", part=bad_part)
+
+
+def test_load_songs_with_part_field(tmp_path):
+    path = _write_yaml(
+        tmp_path,
+        """
+- id: 1
+  title: 歌A
+  bv: BV1xx411c7mD
+  part: 3
+  note: 分P来源
+""",
+    )
+    songs = load_songs(path)
+    assert songs[0].part == 3
+
+
+def test_load_songs_part_zero_rejected(tmp_path):
+    path = _write_yaml(
+        tmp_path,
+        """
+- id: 1
+  title: 歌A
+  bv: BV1xx411c7mD
+  part: 0
+""",
+    )
+    with pytest.raises(LibraryError):
+        load_songs(path)
 
 
 def _make_library(tmp_path: Path, count: int = 3) -> Library:

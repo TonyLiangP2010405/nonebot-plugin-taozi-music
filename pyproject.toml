@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-taozi-music"
-version = "0.2.3"
+version = "0.3.0"
 description = "每天定时在群里语音播放小小桃子呦唱过的歌"
 authors = ["TonyLiangP2010405"]
 license = "MIT"

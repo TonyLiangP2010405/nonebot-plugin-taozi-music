@@ -35,6 +35,7 @@ class Song(BaseModel):
     id: int
     title: str
     bv: str
+    part: Optional[int] = None
     start: Optional[str] = None
     end: Optional[str] = None
     note: str = ""
@@ -44,6 +45,13 @@ class Song(BaseModel):
     def _check_bv(cls, v: str) -> str:
         if not v.startswith("BV"):
             raise ValueError(f"非法 BV 号: {v!r}")
+        return v
+
+    @field_validator("part")
+    @classmethod
+    def _check_part(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v < 1:
+            raise ValueError(f"分P序号必须 >= 1: {v}")
         return v
 
     @property

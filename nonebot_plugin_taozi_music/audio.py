@@ -2,6 +2,7 @@ import asyncio
 import shutil
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 import httpx
 
@@ -32,8 +33,13 @@ async def _run(cmd: list) -> None:
         raise AudioError(f"命令执行失败 ({cmd[0]}): {tail}")
 
 
-async def _fetch_audio_url(client: httpx.AsyncClient, bv: str) -> str:
-    """经 B站官方 API 取最高码率音频流地址，失败抛 AudioError"""
+async def _fetch_audio_url(
+    client: httpx.AsyncClient, bv: str, part: Optional[int] = None
+) -> str:
+    """经 B站官方 API 取最高码率音频流地址，失败抛 AudioError
+
+    part 为 None 时取视频默认 cid（第一个分P）；指定 part 时取该分P 的 cid。
+    """
     # 先访问首页拿 buvid3 等 cookie，避免 API 被 412 风控拦截
     await client.get(HOMEPAGE)
 
@@ -43,12 +49,21 @@ async def _fetch_audio_url(client: httpx.AsyncClient, bv: str) -> str:
     try:
         data = resp.json()
         code = data.get("code")
-        cid = (data.get("data") or {}).get("cid")
+        video = data.get("data") or {}
+        cid = video.get("cid")
+        pages = video.get("pages")
     except (ValueError, KeyError, TypeError, AttributeError) as e:
         raise AudioError(f"获取视频信息失败 ({bv}): 响应格式异常") from e
     if code != 0:
         raise AudioError(f"获取视频信息失败 ({bv}): code={code}")
-    if not cid:
+    if part is not None:
+        try:
+            cid = next(p.get("cid") for p in pages if p.get("page") == part)
+        except (StopIteration, TypeError, AttributeError) as e:
+            raise AudioError(f"视频 {bv} 不存在分P {part}") from e
+        if not cid:
+            raise AudioError(f"视频 {bv} 不存在分P {part}")
+    elif not cid:
         raise AudioError(f"获取视频信息失败 ({bv}): 未取到 cid")
 
     resp = await client.get(PLAYURL_API, params={"bvid": bv, "cid": cid, "fnval": 16})
@@ -79,7 +94,7 @@ async def _download_audio(song: Song, raw_path: Path) -> None:
         async with httpx.AsyncClient(
             headers=headers, follow_redirects=True, timeout=60
         ) as client:
-            url = await _fetch_audio_url(client, song.bv)
+            url = await _fetch_audio_url(client, song.bv, song.part)
             async with client.stream("GET", url) as resp:
                 if resp.status_code != 200:
                     raise AudioError(f"音频下载失败: HTTP {resp.status_code}")

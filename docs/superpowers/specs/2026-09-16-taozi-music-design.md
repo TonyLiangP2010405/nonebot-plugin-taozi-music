@@ -27,6 +27,7 @@ NoneBot2 插件：每天定时在 QQ 群里以**语音条**形式播放主播「
 - id: 1                  # 整数编号，用于点歌
   title: 歌名
   bv: BVxxxxx            # 来源视频 BV 号
+  part: 2                # 可选，分P序号（1 起）；多P录播指定要取的分P，省略表示第一P
   start: "12:30"         # 唱歌开始时间（秒数或 mm:ss）；切片视频省略表示整段
   end: "14:05"           # 唱歌结束时间；与 start 成对出现或同时省略
   note: "来源说明"        # 可选，如切片 UP 主名
@@ -35,6 +36,7 @@ NoneBot2 插件：每天定时在 QQ 群里以**语音条**形式播放主播「
 校验规则：
 
 - id 全局唯一；title、bv 必填
+- part 可选；填写时必须 >= 1，音频下载按该分P 的 cid 取流
 - start/end 要么同时存在要么同时省略；end 必须大于 start
 - 文件损坏或校验失败时插件 import 不失败，加载歌单时记录错误并对命令返回友好提示
 
@@ -63,7 +65,7 @@ nonebot_plugin_taozi_music/
 ### audio.py
 
 - 缓存目录：`data/cache/{id}.mp3`，命中缓存直接使用
-- 未命中：经 B站官方 API 下载音频流（httpx：view 接口取 cid → playurl `fnval=16` 取 DASH 最高码率音频 → 带 UA/Referer 下载 m4a 到临时文件；先访问首页拿 cookie 避免 412 风控）
+- 未命中：经 B站官方 API 下载音频流（httpx：view 接口取 cid（song 带 part 时按分P 页码从 `data.pages` 取对应 cid）→ playurl `fnval=16` 取 DASH 最高码率音频 → 带 UA/Referer 下载 m4a 到临时文件；先访问首页拿 cookie 避免 412 风控）
 - 用 ffmpeg 转码为 mp3；若有 start/end 同时按时间戳裁剪（`-ss`/`-to` 输出选项）
 - 产物写入缓存目录；下载/裁剪失败抛出自定义异常，命令层给出友好提示
 - ffmpeg 不存在时，加载不报错，执行播放命令时提示缺少依赖
