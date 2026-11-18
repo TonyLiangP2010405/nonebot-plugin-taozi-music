@@ -59,6 +59,8 @@ taozi_music_send_time="21:00"
 
 ## 歌单
 
+当前内置 133 条曲目（含不同演唱版本与歌切合集）。2026-11-18 新增 91 条可单独点播的歌切，编号 43–133，包括《雨爱》《登神（GODS）》《红莲华》《发如雪》《山海》《水星记》等。详见[曲库更新记录](https://github.com/TonyLiangP2010405/nonebot-plugin-taozi-music/blob/v0.3.1/docs/song-library-2026-11-18.md)。
+
 歌单在 `nonebot_plugin_taozi_music/resources/songs.yaml`，每条记录：
 
 ```yaml

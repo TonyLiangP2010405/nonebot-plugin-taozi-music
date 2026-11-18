@@ -1,6 +1,6 @@
 # 小小桃子呦（B站 UID 6867955，直播间 22725947）真实唱歌视频歌单
-# 数据来源：bilibili 搜索 + bili video 逐条核验（2026-09-16）
-# 全部为切片UP主切好的唱歌视频，整段即歌，无需裁剪
+# 数据来源：bilibili 搜索 + bili-cli 视频元数据核验（最近扩充：2026-11-18）
+# 来源含唱歌切片、歌会合集及录播唱歌分P；多P视频用 part 指定实际页码
 - id: 1
   title: 耀斑（桃纸live）
   bv: BV1Ui6GBmEyC
@@ -189,3 +189,451 @@
   bv: BV1dcKK6tEMK
   part: 18
   note: 主播小号演唱会录播 分P 18（站内分P标题为「听~见你说」，即《突然的自我》开头歌词「听见你说，朝阳起又落」；id11 合集十首与本视频各分P一一对应可交叉验证）
+# ==== 2026-11-18 扩充（id 43-61）：鸭鸭的呆毛 10-11 月唱歌分P ====
+# 经 bili-cli 核验标题、主播主页与实际分P页码；详见 docs/song-library-2026-11-18.md
+- id: 43
+  title: 沧海一声笑（桃纸10.28 live）
+  bv: BV1RAxE6VEdP
+  part: 1
+  note: 切片UP主：鸭鸭的呆毛；2026-10-28 发布，分P 1「沧海一声笑」；简介挂 space.bilibili.com/6867955
+- id: 44
+  title: 菊花台（桃纸10.28 live）
+  bv: BV1RAxE6VEdP
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛；2026-10-28 发布，分P 2「桃纸《菊花台》」；简介挂 space.bilibili.com/6867955
+- id: 45
+  title: 兰亭序（桃纸10.28 live）
+  bv: BV1RAxE6VEdP
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛；2026-10-28 发布，分P 3「兰亭序」；简介挂 space.bilibili.com/6867955
+- id: 46
+  title: 丝路（桃纸10.28 live）
+  bv: BV1RAxE6VEdP
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛；2026-10-28 发布，分P 4「丝路」；简介挂 space.bilibili.com/6867955
+- id: 47
+  title: 天下（桃纸10.28 live）
+  bv: BV1RAxE6VEdP
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛；2026-10-28 发布，分P 5「天下」；简介挂 space.bilibili.com/6867955
+- id: 48
+  title: 登神（GODS）（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 1
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 1「登神(GODS)」；简介挂 space.bilibili.com/6867955
+- id: 49
+  title: 宿敌（ENEMY）（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 2「ENEMY(宿敌)」；简介挂 space.bilibili.com/6867955
+- id: 50
+  title: Legends Never Die（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 3「Legends Never Die」；简介挂 space.bilibili.com/6867955
+- id: 51
+  title: Numb（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 4「Numb」；简介挂 space.bilibili.com/6867955
+- id: 52
+  title: RISE（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 5「桃纸_《RISE》 （rice）」；简介挂 space.bilibili.com/6867955
+- id: 53
+  title: We Are the Champions（桃纸11.15 live）
+  bv: BV1f5sp6tE4G
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛；2026-11-15 发布，分P 6「We Are The Champions」；简介挂 space.bilibili.com/6867955
+- id: 54
+  title: 雨爱（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 2「雨爱」；简介挂 space.bilibili.com/6867955
+- id: 55
+  title: 耀斑（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 1
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 1「耀斑_」；简介挂 space.bilibili.com/6867955
+- id: 56
+  title: 麒麟（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 3「麒麟」；简介挂 space.bilibili.com/6867955
+- id: 57
+  title: Poker Face（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 4「Poker Face」；简介挂 space.bilibili.com/6867955
+- id: 58
+  title: 不眠之夜（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 5「不眠之夜」；简介挂 space.bilibili.com/6867955
+- id: 59
+  title: 来自天堂的魔鬼（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 6「来自天堂的魔鬼」；简介挂 space.bilibili.com/6867955
+- id: 60
+  title: 鲜花（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 7
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 7「鲜花」；简介挂 space.bilibili.com/6867955
+- id: 61
+  title: 野火（桃纸11.17 live）
+  bv: BV1b1s66cEUh
+  part: 8
+  note: 切片UP主：鸭鸭的呆毛；2026-11-17 发布，分P 8「野火」；简介挂 space.bilibili.com/6867955
+# ==== 2026-11-18 补录（id 62-133）：独立歌切及旧合集遗漏分P ====
+- id: 62
+  title: 红莲华（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 1
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 1「红莲华」
+- id: 63
+  title: 心湖（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 3「心湖」
+- id: 64
+  title: 下雨天（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 4「下雨天」
+- id: 65
+  title: What Can I Do（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 5「What Can I Do」
+- id: 66
+  title: 光辉岁月（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 6「光辉岁月」
+- id: 67
+  title: 说散就散（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 7
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 7「说散就散」
+- id: 68
+  title: Reflection（桃纸11.10 歌回）
+  bv: BV1xMWu6wEaX
+  part: 8
+  note: 切片UP主：鸭鸭的呆毛。2026-11-10 发布，分P 8「Reflection」
+- id: 69
+  title: 月半小夜曲（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 1
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 1「月半小夜曲」
+- id: 70
+  title: 王妃（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 2「《王妃》」
+- id: 71
+  title: 悟空（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 3「悟空」
+- id: 72
+  title: 突然好想你（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 4「突然好想你」
+- id: 73
+  title: 男孩（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 6「男孩」
+- id: 74
+  title: 月亮之上（桃纸歌回）
+  bv: BV1Zv7H6zEDS
+  part: 7
+  note: 切片UP主：鸭鸭的呆毛。2026-06-27 发布，分P 7「月亮之上」
+- id: 75
+  title: 发如雪（桃纸live）
+  bv: BV1HYnh6CEiH
+  note: 切片UP主：魚鰐。2026-10-23 发布
+- id: 76
+  title: 山海（桃纸live）
+  bv: BV1MrnR6xELH
+  note: 切片UP主：Saturniy。2026-10-26 发布
+- id: 77
+  title: 你是我的眼（桃纸live）
+  bv: BV1UqxK6aE4t
+  note: 切片UP主：高能游戏眼。2026-10-27 发布
+- id: 78
+  title: 月光（桃纸live）
+  bv: BV1peGm6BEbR
+  note: 切片UP主：双刀纸袋布。2026-05-28 发布
+- id: 79
+  title: 煎熬（桃纸live）
+  bv: BV1Kz7a6mE8X
+  note: 切片UP主：鸭鸭的呆毛。2026-06-25 发布
+- id: 80
+  title: 丑八怪（桃纸live）
+  bv: BV1f4ZXBoEdP
+  note: 切片UP主：嗤纸条。2026-02-18 发布
+- id: 81
+  title: 爱错（桃纸live）
+  bv: BV1p5f3BUEFR
+  note: 切片UP主：嗤纸条。2026-02-20 发布
+- id: 82
+  title: 麒麟（巴老师×桃纸合唱版）
+  bv: BV1P9riB7EfV
+  note: 切片UP主：鸭鸭的呆毛。2026-01-13 发布
+- id: 83
+  title: New Boy（桃纸live）
+  bv: BV1SXr6BeEte
+  note: 切片UP主：寒洛茗。2026-01-16 发布
+- id: 84
+  title: 麒麟（丝茉茉生日会桃纸独唱版）
+  bv: BV1VYJU6CEeT
+  note: 切片UP主：记录园长的芋头。2026-10-16 发布
+- id: 85
+  title: 红色高跟鞋（桃纸歌切）
+  bv: BV1LdtU6TEgr
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛。2026-09-02 发布，分P 2「《红色高跟鞋》」
+- id: 86
+  title: Let It Go（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 3「Let It Go」
+- id: 87
+  title: 想你的夜（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 4「桃纸《想你的夜》」
+- id: 88
+  title: 连名带姓（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 5「连名带姓」
+- id: 89
+  title: 花海（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 6「花海」
+- id: 90
+  title: Wrecking Ball（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 7
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 7「Wrecking Ball」
+- id: 91
+  title: Rolling in the Deep（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 8
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 8「Rolling In The Deep」
+- id: 92
+  title: 灰色头像（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 9
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 9「灰色头像」
+- id: 93
+  title: 甲乙丙丁（桃纸歌切）
+  bv: BV1NBh56aEMn
+  part: 10
+  note: 切片UP主：鸭鸭的呆毛。2026-08-25 发布，分P 10「甲乙丙丁 (你我怎么两清)」
+- id: 94
+  title: 你把我灌醉（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 3「你把我灌醉」
+- id: 95
+  title: 杀死那个石家庄人（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 4「杀死那个石家庄人」
+- id: 96
+  title: 你要跳舞吗（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 5
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 5「你要跳舞吗」
+- id: 97
+  title: 水星记（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 6
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 6「水星记」
+- id: 98
+  title: 凄美地（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 7
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 7「凄美地」
+- id: 99
+  title: Christmas In My Heart（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 9
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 9「Christmas In My Heart」
+- id: 100
+  title: 圣诞结（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 10
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 10「圣诞结」
+- id: 101
+  title: Dear John（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 11
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 11「DEARJOHN」
+- id: 102
+  title: 烟火里的尘埃（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 13
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 13「烟火里的尘埃」
+- id: 103
+  title: 光年之外（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 14
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 14「光年之外」
+- id: 104
+  title: 我多想拥抱你（桃纸歌切）
+  bv: BV1JBq6BgEwD
+  part: 16
+  note: 切片UP主：鸭鸭的呆毛。2025-12-20 发布，分P 16「我多想拥抱你」
+- id: 105
+  title: for ya（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 2
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 2「for ya」
+- id: 106
+  title: 火红的萨日朗（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 5
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 5「火红的萨日朗」
+- id: 107
+  title: 站在草原望北京（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 6
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 6「站在草原望北京」
+- id: 108
+  title: 素颜（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 10
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 10「素颜」
+- id: 109
+  title: 有何不可（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 11
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 11「有何不可」
+- id: 110
+  title: 左手指月（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 12
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 12「左手指月」
+- id: 111
+  title: 晴天（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 13
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 13「晴天」
+- id: 112
+  title: 孤单北半球（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 14
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 14「孤单北半球‌」
+- id: 113
+  title: 她的睫毛（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 15
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 15「她的睫毛」
+- id: 114
+  title: 宝贝（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 18
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 18「宝贝」
+- id: 115
+  title: 走马（桃纸歌会）
+  bv: BV1rVXsBNEwJ
+  part: 19
+  note: 切片UP主：寒洛茗。2026-03-26 发布，分P 19「走马」
+- id: 116
+  title: APT.（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 5
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 5「APT」
+- id: 117
+  title: Love Story（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 7
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 7「Love Story」
+- id: 118
+  title: 给你呀（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 8
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 8「给你呀」
+- id: 119
+  title: 不能说的秘密（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 9
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 9「不能说的秘密」
+- id: 120
+  title: 反方向的钟（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 11
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 11「反方向的钟」
+- id: 121
+  title: 枫（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 12
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 12「枫」
+- id: 122
+  title: 告白气球（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 13
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 13「告白气球」
+- id: 123
+  title: 勾指起誓（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 14
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 14「勾指起誓」
+- id: 124
+  title: 关于夜晚和失眠的世界（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 15
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 15「关于夜晚和失眠的世界」
+- id: 125
+  title: 坏女孩（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 17
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 17「坏女孩」
+- id: 126
+  title: 没有理想的人不伤心（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 18
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 18「没有理想的人不伤心」
+- id: 127
+  title: 贤良（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 20
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 20「贤良」
+- id: 128
+  title: 找自己（桃纸歌切）
+  bv: BV1L4fcYnEqn
+  part: 21
+  note: 切片UP主：三绿一百盒。2025-04-02 发布，分P 21「找自己」
+- id: 129
+  title: 理想（桃纸歌切）
+  bv: BV1GitV6PEJY
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-09-01 发布，分P 3「《理想》」
+- id: 130
+  title: 怎么说我不爱你（桃纸歌切）
+  bv: BV1rTckzrE5H
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-03-12 发布，分P 3「怎么说我不爱你」
+- id: 131
+  title: Lemon Tree（桃纸歌切）
+  bv: BV1rTckzrE5H
+  part: 4
+  note: 切片UP主：鸭鸭的呆毛。2026-03-12 发布，分P 4「Lemon Tree」
+- id: 132
+  title: Lovin' You（桃纸海豚音）
+  bv: BV1wcb163E9Y
+  part: 2
+  note: 切片UP主：鸭鸭的呆毛。2026-08-15 发布，分P 2「《Lovin' You》」
+- id: 133
+  title: Посвящение（桃纸海豚音）
+  bv: BV1wcb163E9Y
+  part: 3
+  note: 切片UP主：鸭鸭的呆毛。2026-08-15 发布，分P 3「Посвящение」
